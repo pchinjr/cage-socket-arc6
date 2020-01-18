@@ -1,0 +1,22 @@
+{
+  "name": "cage-socket-arc6",
+  "version": "1.0.0",
+  "description": "A new era of real time Cage worship",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pchinjr/cage-socket-arc6.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pchinjr/cage-socket-arc6/issues"
+  },
+  "homepage": "https://github.com/pchinjr/cage-socket-arc6#readme",
+  "dependencies": {
+    "@architect/architect": "^6.1.0"
+  }
+}
