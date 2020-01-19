@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Exported by architect/package@1.0.56 on 2020-01-18T01:02:34.995Z
+Description: Exported by architect/package@1.1.0 on 2020-01-19T01:10:40.141Z
 Resources:
   CageSocketArc6:
     Type: AWS::Serverless::Api
@@ -20,6 +20,22 @@ Resources:
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetIndex.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                    contentHandling: CONVERT_TO_TEXT
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                contentHandling: CONVERT_TO_TEXT
+                type: aws_proxy
+          /api:
+            get:
+              responses:
+                '200':
+                  description: 200 response
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetApi.Arn}/invocations
                 responses:
                   default:
                     statusCode: '200'
@@ -82,7 +98,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/372bb5627975aba3a08a1773ee11509d
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/b41bb0b25f2dd0795c66b8f440976786
       Runtime: nodejs10.x
       MemorySize: 1152
       Timeout: 5
@@ -108,6 +124,39 @@ Resources:
           Type: Api
           Properties:
             Path: /
+            Method: GET
+            RestApiId:
+              Ref: CageSocketArc6
+  GetApi:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/3fa9ede9e02fc2438b8573497b5331c2
+      Runtime: nodejs10.x
+      MemorySize: 1152
+      Timeout: 5
+      Environment:
+        Variables:
+          ARC_ROLE:
+            Ref: Role
+          ARC_CLOUDFORMATION:
+            Ref: AWS::StackName
+          ARC_APP_NAME: cage-socket-arc6
+          ARC_HTTP: aws_proxy
+          NODE_ENV: staging
+          SESSION_TABLE_NAME: jwe
+          ARC_STATIC_BUCKET:
+            Ref: StaticBucket
+      Role:
+        Fn::Sub:
+        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
+        - roleName:
+            Ref: Role
+      Events:
+        GetApiEvent:
+          Type: Api
+          Properties:
+            Path: /api
             Method: GET
             RestApiId:
               Ref: CageSocketArc6
