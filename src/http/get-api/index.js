@@ -1,5 +1,8 @@
+const url = require('@architect/shared/utils/url');
+
 exports.handler = async function http (req) {
   console.log('Begin API called')
+  console.log(url('paul'))
   return {
     headers: {
       'content-type': 'application/json; charset=utf8',

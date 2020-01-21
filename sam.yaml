@@ -1,33 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Exported by architect/package@1.1.0 on 2020-01-19T01:10:40.141Z
+Description: Exported by architect/package@1.1.0 on 2020-01-21T14:24:44.185Z
 Resources:
   CageSocketArc6:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: staging
+      StageName: production
       DefinitionBody:
         openapi: 3.0.1
         info:
           title:
             Ref: AWS::StackName
         paths:
-          /:
-            get:
-              responses:
-                '200':
-                  description: 200 response
-              x-amazon-apigateway-integration:
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetIndex.Arn}/invocations
-                responses:
-                  default:
-                    statusCode: '200'
-                    contentHandling: CONVERT_TO_TEXT
-                passthroughBehavior: when_no_match
-                httpMethod: POST
-                contentHandling: CONVERT_TO_TEXT
-                type: aws_proxy
           /api:
             get:
               responses:
@@ -36,6 +20,22 @@ Resources:
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetApi.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                    contentHandling: CONVERT_TO_TEXT
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                contentHandling: CONVERT_TO_TEXT
+                type: aws_proxy
+          /:
+            get:
+              responses:
+                '200':
+                  description: 200 response
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetIndex.Arn}/invocations
                 responses:
                   default:
                     statusCode: '200'
@@ -94,39 +94,6 @@ Resources:
       BinaryMediaTypes:
       - '*~1*'
       MinimumCompressionSize: 0
-  GetIndex:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/b41bb0b25f2dd0795c66b8f440976786
-      Runtime: nodejs10.x
-      MemorySize: 1152
-      Timeout: 5
-      Environment:
-        Variables:
-          ARC_ROLE:
-            Ref: Role
-          ARC_CLOUDFORMATION:
-            Ref: AWS::StackName
-          ARC_APP_NAME: cage-socket-arc6
-          ARC_HTTP: aws_proxy
-          NODE_ENV: staging
-          SESSION_TABLE_NAME: jwe
-          ARC_STATIC_BUCKET:
-            Ref: StaticBucket
-      Role:
-        Fn::Sub:
-        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
-        - roleName:
-            Ref: Role
-      Events:
-        GetIndexEvent:
-          Type: Api
-          Properties:
-            Path: /
-            Method: GET
-            RestApiId:
-              Ref: CageSocketArc6
   GetApi:
     Type: AWS::Serverless::Function
     Properties:
@@ -143,7 +110,7 @@ Resources:
             Ref: AWS::StackName
           ARC_APP_NAME: cage-socket-arc6
           ARC_HTTP: aws_proxy
-          NODE_ENV: staging
+          NODE_ENV: production
           SESSION_TABLE_NAME: jwe
           ARC_STATIC_BUCKET:
             Ref: StaticBucket
@@ -157,6 +124,39 @@ Resources:
           Type: Api
           Properties:
             Path: /api
+            Method: GET
+            RestApiId:
+              Ref: CageSocketArc6
+  GetIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/a04161f4aaf2b9f2978d0d57213c9e1f
+      Runtime: nodejs10.x
+      MemorySize: 1152
+      Timeout: 5
+      Environment:
+        Variables:
+          ARC_ROLE:
+            Ref: Role
+          ARC_CLOUDFORMATION:
+            Ref: AWS::StackName
+          ARC_APP_NAME: cage-socket-arc6
+          ARC_HTTP: aws_proxy
+          NODE_ENV: production
+          SESSION_TABLE_NAME: jwe
+          ARC_STATIC_BUCKET:
+            Ref: StaticBucket
+      Role:
+        Fn::Sub:
+        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
+        - roleName:
+            Ref: Role
+      Events:
+        GetIndexEvent:
+          Type: Api
+          Properties:
+            Path: /
             Method: GET
             RestApiId:
               Ref: CageSocketArc6
@@ -257,7 +257,7 @@ Outputs:
     Description: API Gateway
     Value:
       Fn::Sub:
-      - https://${restApiId}.execute-api.${AWS::Region}.amazonaws.com/staging
+      - https://${restApiId}.execute-api.${AWS::Region}.amazonaws.com/production
       - restApiId:
           Ref: CageSocketArc6
   restApiId:

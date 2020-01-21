@@ -1,12 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "Exported by architect/package@1.1.0 on 2020-01-19T01:10:40.141Z",
+  "Description": "Exported by architect/package@1.1.0 on 2020-01-21T14:24:44.185Z",
   "Resources": {
     "CageSocketArc6": {
       "Type": "AWS::Serverless::Api",
       "Properties": {
-        "StageName": "staging",
+        "StageName": "production",
         "DefinitionBody": {
           "openapi": "3.0.1",
           "info": {
@@ -15,7 +15,7 @@
             }
           },
           "paths": {
-            "/": {
+            "/api": {
               "get": {
                 "responses": {
                   "200": {
@@ -24,7 +24,7 @@
                 },
                 "x-amazon-apigateway-integration": {
                   "uri": {
-                    "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetIndex.Arn}/invocations"
+                    "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetApi.Arn}/invocations"
                   },
                   "responses": {
                     "default": {
@@ -39,7 +39,7 @@
                 }
               }
             },
-            "/api": {
+            "/": {
               "get": {
                 "responses": {
                   "200": {
@@ -48,7 +48,7 @@
                 },
                 "x-amazon-apigateway-integration": {
                   "uri": {
-                    "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetApi.Arn}/invocations"
+                    "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetIndex.Arn}/invocations"
                   },
                   "responses": {
                     "default": {
@@ -145,55 +145,6 @@
         "MinimumCompressionSize": 0
       }
     },
-    "GetIndex": {
-      "Type": "AWS::Serverless::Function",
-      "Properties": {
-        "Handler": "index.handler",
-        "CodeUri": "./src/http/get-index",
-        "Runtime": "nodejs10.x",
-        "MemorySize": 1152,
-        "Timeout": 5,
-        "Environment": {
-          "Variables": {
-            "ARC_ROLE": {
-              "Ref": "Role"
-            },
-            "ARC_CLOUDFORMATION": {
-              "Ref": "AWS::StackName"
-            },
-            "ARC_APP_NAME": "cage-socket-arc6",
-            "ARC_HTTP": "aws_proxy",
-            "NODE_ENV": "staging",
-            "SESSION_TABLE_NAME": "jwe",
-            "ARC_STATIC_BUCKET": {
-              "Ref": "StaticBucket"
-            }
-          }
-        },
-        "Role": {
-          "Fn::Sub": [
-            "arn:aws:iam::${AWS::AccountId}:role/${roleName}",
-            {
-              "roleName": {
-                "Ref": "Role"
-              }
-            }
-          ]
-        },
-        "Events": {
-          "GetIndexEvent": {
-            "Type": "Api",
-            "Properties": {
-              "Path": "/",
-              "Method": "GET",
-              "RestApiId": {
-                "Ref": "CageSocketArc6"
-              }
-            }
-          }
-        }
-      }
-    },
     "GetApi": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
@@ -212,7 +163,7 @@
             },
             "ARC_APP_NAME": "cage-socket-arc6",
             "ARC_HTTP": "aws_proxy",
-            "NODE_ENV": "staging",
+            "NODE_ENV": "production",
             "SESSION_TABLE_NAME": "jwe",
             "ARC_STATIC_BUCKET": {
               "Ref": "StaticBucket"
@@ -234,6 +185,55 @@
             "Type": "Api",
             "Properties": {
               "Path": "/api",
+              "Method": "GET",
+              "RestApiId": {
+                "Ref": "CageSocketArc6"
+              }
+            }
+          }
+        }
+      }
+    },
+    "GetIndex": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "CodeUri": "/usr/local/lib/node_modules/@architect/architect/node_modules/@architect/http-proxy/dist",
+        "Runtime": "nodejs10.x",
+        "MemorySize": 1152,
+        "Timeout": 5,
+        "Environment": {
+          "Variables": {
+            "ARC_ROLE": {
+              "Ref": "Role"
+            },
+            "ARC_CLOUDFORMATION": {
+              "Ref": "AWS::StackName"
+            },
+            "ARC_APP_NAME": "cage-socket-arc6",
+            "ARC_HTTP": "aws_proxy",
+            "NODE_ENV": "production",
+            "SESSION_TABLE_NAME": "jwe",
+            "ARC_STATIC_BUCKET": {
+              "Ref": "StaticBucket"
+            }
+          }
+        },
+        "Role": {
+          "Fn::Sub": [
+            "arn:aws:iam::${AWS::AccountId}:role/${roleName}",
+            {
+              "roleName": {
+                "Ref": "Role"
+              }
+            }
+          ]
+        },
+        "Events": {
+          "GetIndexEvent": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/",
               "Method": "GET",
               "RestApiId": {
                 "Ref": "CageSocketArc6"
@@ -411,7 +411,7 @@
       "Description": "API Gateway",
       "Value": {
         "Fn::Sub": [
-          "https://${restApiId}.execute-api.${AWS::Region}.amazonaws.com/staging",
+          "https://${restApiId}.execute-api.${AWS::Region}.amazonaws.com/production",
           {
             "restApiId": {
               "Ref": "CageSocketArc6"
