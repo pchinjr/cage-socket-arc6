@@ -1,12 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "Exported by architect/package@1.1.0 on 2020-01-21T14:24:44.185Z",
+  "Description": "Exported by architect/package@1.1.0 on 2020-01-21T15:21:57.281Z",
   "Resources": {
     "CageSocketArc6": {
       "Type": "AWS::Serverless::Api",
       "Properties": {
-        "StageName": "production",
+        "StageName": "staging",
         "DefinitionBody": {
           "openapi": "3.0.1",
           "info": {
@@ -150,7 +150,7 @@
       "Properties": {
         "Handler": "index.handler",
         "CodeUri": "./src/http/get-api",
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "MemorySize": 1152,
         "Timeout": 5,
         "Environment": {
@@ -163,7 +163,7 @@
             },
             "ARC_APP_NAME": "cage-socket-arc6",
             "ARC_HTTP": "aws_proxy",
-            "NODE_ENV": "production",
+            "NODE_ENV": "staging",
             "SESSION_TABLE_NAME": "jwe",
             "ARC_STATIC_BUCKET": {
               "Ref": "StaticBucket"
@@ -212,7 +212,7 @@
             },
             "ARC_APP_NAME": "cage-socket-arc6",
             "ARC_HTTP": "aws_proxy",
-            "NODE_ENV": "production",
+            "NODE_ENV": "staging",
             "SESSION_TABLE_NAME": "jwe",
             "ARC_STATIC_BUCKET": {
               "Ref": "StaticBucket"
@@ -411,7 +411,7 @@
       "Description": "API Gateway",
       "Value": {
         "Fn::Sub": [
-          "https://${restApiId}.execute-api.${AWS::Region}.amazonaws.com/production",
+          "https://${restApiId}.execute-api.${AWS::Region}.amazonaws.com/staging",
           {
             "restApiId": {
               "Ref": "CageSocketArc6"
