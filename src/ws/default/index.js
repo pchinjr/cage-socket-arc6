@@ -2,18 +2,16 @@
 const arc = require('@architect/functions')
 
 exports.handler = async function ws(event) {
-  const connectionId = event.requestContect.connectionId
-  const message = JSON.parse(event.body)
-  const action = JSON.parse(event.body).action
-
-  if (action === 'connected') {
-    let id = connectionId
-    let payload = {
-      action: 'connected'
+  console.log(event)
+  await arc.ws.send({
+    //who to send it to
+    id: event.requestContext.connectionId,
+    //what we're sending
+    payload: {
+      praise: 'cage',
+      id: event.requestContext.connectionId
     }
-    return arc.ws(event).send({
-      id: id,
-      payload: payload
-    })
-  }
+  })
+  
+  return {statusCode: 200}
 }
