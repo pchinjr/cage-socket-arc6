@@ -394,28 +394,28 @@ var app = (function () {
     			br14 = element("br");
     			if (img.src !== (img_src_value = "cagepng.png")) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "alt", "One True God");
-    			add_location(img, file, 32, 0, 622);
-    			add_location(p0, file, 33, 0, 666);
-    			add_location(h1, file, 34, 0, 706);
-    			add_location(h2, file, 35, 0, 725);
-    			add_location(strong0, file, 36, 3, 755);
-    			add_location(br0, file, 36, 56, 808);
-    			add_location(br1, file, 37, 22, 836);
-    			add_location(br2, file, 38, 21, 864);
-    			add_location(br3, file, 39, 22, 893);
-    			add_location(br4, file, 40, 32, 932);
-    			add_location(br5, file, 41, 41, 980);
-    			add_location(br6, file, 42, 31, 1018);
-    			add_location(br7, file, 43, 36, 1061);
-    			add_location(br8, file, 44, 35, 1103);
-    			add_location(br9, file, 45, 31, 1141);
-    			add_location(br10, file, 46, 2, 1149);
-    			add_location(br11, file, 47, 30, 1186);
-    			add_location(br12, file, 48, 24, 1217);
-    			add_location(br13, file, 49, 20, 1244);
-    			add_location(strong1, file, 50, 2, 1253);
-    			add_location(br14, file, 50, 23, 1274);
-    			add_location(p1, file, 36, 0, 752);
+    			add_location(img, file, 30, 0, 578);
+    			add_location(p0, file, 31, 0, 622);
+    			add_location(h1, file, 32, 0, 662);
+    			add_location(h2, file, 33, 0, 681);
+    			add_location(strong0, file, 34, 3, 711);
+    			add_location(br0, file, 34, 56, 764);
+    			add_location(br1, file, 35, 22, 792);
+    			add_location(br2, file, 36, 21, 820);
+    			add_location(br3, file, 37, 22, 849);
+    			add_location(br4, file, 38, 32, 888);
+    			add_location(br5, file, 39, 41, 936);
+    			add_location(br6, file, 40, 31, 974);
+    			add_location(br7, file, 41, 36, 1017);
+    			add_location(br8, file, 42, 35, 1059);
+    			add_location(br9, file, 43, 31, 1097);
+    			add_location(br10, file, 44, 2, 1105);
+    			add_location(br11, file, 45, 30, 1142);
+    			add_location(br12, file, 46, 24, 1173);
+    			add_location(br13, file, 47, 20, 1200);
+    			add_location(strong1, file, 48, 2, 1209);
+    			add_location(br14, file, 48, 23, 1230);
+    			add_location(p1, file, 34, 0, 708);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -514,9 +514,7 @@ var app = (function () {
     		};
 
     		ws.onmessage = e => {
-    			console.log(e);
     			let msg = JSON.parse(e.data);
-    			console.log(msg);
     			$$invalidate(1, connectionId = msg.id);
     		};
     	});

@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "Exported by architect/package@1.2.1 on 2020-01-22T20:51:02.252Z",
+  "Description": "Exported by architect/package@1.2.1 on 2020-01-23T05:23:53.940Z",
   "Resources": {
     "CageSocketArc6": {
       "Type": "AWS::Serverless::Api",
@@ -358,7 +358,7 @@
       "Properties": {
         "Handler": "index.handler",
         "CodeUri": "./src/ws/default",
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "MemorySize": 1152,
         "Timeout": 5,
         "Environment": {
@@ -452,7 +452,7 @@
       "Properties": {
         "Handler": "index.handler",
         "CodeUri": "./src/ws/connect",
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "MemorySize": 1152,
         "Timeout": 5,
         "Environment": {
@@ -546,7 +546,7 @@
       "Properties": {
         "Handler": "index.handler",
         "CodeUri": "./src/ws/disconnect",
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "MemorySize": 1152,
         "Timeout": 5,
         "Environment": {

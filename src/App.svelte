@@ -20,9 +20,7 @@
     }
 
     ws.onmessage = (e) => {
-      console.log(e)
       let msg = JSON.parse(e.data)
-      console.log(msg)
       connectionId = msg.id
     }
 

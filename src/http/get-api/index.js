@@ -6,7 +6,7 @@ exports.handler = async function http (req) {
       'cache-control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     },
     body: JSON.stringify({
-      msg: '#PraiseCage from Svelte + OpenJS Architect!',
+      msg: '#PraiseCage from OpenJS Architect API Call + Svelte!',
       wsUrl: `${process.env.ARC_WSS_URL}:${process.env.PORT}`
   })
 }}
