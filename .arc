@@ -3,5 +3,13 @@ cage-socket-arc6
 
 @static
 
+@cdn
+
+@ws
+
 @http
-get /
+get /api
+
+@tables
+connection_table
+  connectionId *String

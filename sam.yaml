@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Exported by architect/package@1.0.56 on 2020-01-18T01:02:34.995Z
+Description: Exported by architect/package@1.2.1 on 2020-01-22T20:51:02.252Z
 Resources:
   CageSocketArc6:
     Type: AWS::Serverless::Api
@@ -12,6 +12,22 @@ Resources:
           title:
             Ref: AWS::StackName
         paths:
+          /api:
+            get:
+              responses:
+                '200':
+                  description: 200 response
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetApi.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                    contentHandling: CONVERT_TO_TEXT
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                contentHandling: CONVERT_TO_TEXT
+                type: aws_proxy
           /:
             get:
               responses:
@@ -78,12 +94,12 @@ Resources:
       BinaryMediaTypes:
       - '*~1*'
       MinimumCompressionSize: 0
-  GetIndex:
+  GetApi:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/372bb5627975aba3a08a1773ee11509d
-      Runtime: nodejs10.x
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/405e988e43efef99ddc98676c8973a9c
+      Runtime: nodejs12.x
       MemorySize: 1152
       Timeout: 5
       Environment:
@@ -98,6 +114,47 @@ Resources:
           SESSION_TABLE_NAME: jwe
           ARC_STATIC_BUCKET:
             Ref: StaticBucket
+          ARC_WSS_URL:
+            Fn::Sub:
+            - wss://${WS}.execute-api.${AWS::Region}.amazonaws.com/staging
+            - {}
+      Role:
+        Fn::Sub:
+        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
+        - roleName:
+            Ref: Role
+      Events:
+        GetApiEvent:
+          Type: Api
+          Properties:
+            Path: /api
+            Method: GET
+            RestApiId:
+              Ref: CageSocketArc6
+  GetIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/a04161f4aaf2b9f2978d0d57213c9e1f
+      Runtime: nodejs12.x
+      MemorySize: 1152
+      Timeout: 5
+      Environment:
+        Variables:
+          ARC_ROLE:
+            Ref: Role
+          ARC_CLOUDFORMATION:
+            Ref: AWS::StackName
+          ARC_APP_NAME: cage-socket-arc6
+          ARC_HTTP: aws_proxy
+          NODE_ENV: staging
+          SESSION_TABLE_NAME: jwe
+          ARC_STATIC_BUCKET:
+            Ref: StaticBucket
+          ARC_WSS_URL:
+            Fn::Sub:
+            - wss://${WS}.execute-api.${AWS::Region}.amazonaws.com/staging
+            - {}
       Role:
         Fn::Sub:
         - arn:aws:iam::${AWS::AccountId}:role/${roleName}
@@ -130,6 +187,243 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
+  WS:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: CageSocketArc6WebsocketStaging
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: $request.body.message
+  WebsocketDeployment:
+    Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+    - WebsocketConnectRoute
+    - WebsocketDefaultRoute
+    - WebsocketDisconnectRoute
+    Properties:
+      ApiId:
+        Ref: WS
+  WebsocketStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName: staging
+      DeploymentId:
+        Ref: WebsocketDeployment
+      ApiId:
+        Ref: WS
+  WebSocketPolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: Role
+    Properties:
+      PolicyName: ArcWebSocketPolicy
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+          - execute-api:Invoke
+          - execute-api:ManageConnections
+          Resource:
+          - Fn::Sub:
+            - arn:aws:execute-api:${AWS::Region}:*:${api}/*
+            - api:
+                Ref: WS
+      Roles:
+      - Ref: Role
+  WebsocketDefault:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/00b506aa9f28ec94b7e40d2356589441
+      Runtime: nodejs10.x
+      MemorySize: 1152
+      Timeout: 5
+      Environment:
+        Variables:
+          ARC_ROLE:
+            Ref: Role
+          ARC_CLOUDFORMATION:
+            Ref: AWS::StackName
+          ARC_APP_NAME: cage-socket-arc6
+          ARC_HTTP: aws_proxy
+          NODE_ENV: staging
+          SESSION_TABLE_NAME: jwe
+          ARC_STATIC_BUCKET:
+            Ref: StaticBucket
+          ARC_WSS_URL:
+            Fn::Sub:
+            - wss://${WS}.execute-api.${AWS::Region}.amazonaws.com/staging
+            - {}
+      Role:
+        Fn::Sub:
+        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
+        - roleName:
+            Ref: Role
+      Events: {}
+  WebsocketDefaultRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: WS
+      RouteKey: $default
+      OperationName: WebsocketDefaultRoute
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: WebsocketDefaultIntegration
+  WebsocketDefaultIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: WS
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub:
+        - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebsocketDefault.Arn}/invocations
+        - {}
+  WebsocketDefaultPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - WS
+    - WebsocketDefault
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: WebsocketDefault
+      Principal: apigateway.amazonaws.com
+  WebsocketConnect:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/00b506aa9f28ec94b7e40d2356589441
+      Runtime: nodejs10.x
+      MemorySize: 1152
+      Timeout: 5
+      Environment:
+        Variables:
+          ARC_ROLE:
+            Ref: Role
+          ARC_CLOUDFORMATION:
+            Ref: AWS::StackName
+          ARC_APP_NAME: cage-socket-arc6
+          ARC_HTTP: aws_proxy
+          NODE_ENV: staging
+          SESSION_TABLE_NAME: jwe
+          ARC_STATIC_BUCKET:
+            Ref: StaticBucket
+          ARC_WSS_URL:
+            Fn::Sub:
+            - wss://${WS}.execute-api.${AWS::Region}.amazonaws.com/staging
+            - {}
+      Role:
+        Fn::Sub:
+        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
+        - roleName:
+            Ref: Role
+      Events: {}
+  WebsocketConnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: WS
+      RouteKey: $connect
+      OperationName: WebsocketConnectRoute
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: WebsocketConnectIntegration
+  WebsocketConnectIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: WS
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub:
+        - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebsocketConnect.Arn}/invocations
+        - {}
+  WebsocketConnectPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - WS
+    - WebsocketConnect
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: WebsocketConnect
+      Principal: apigateway.amazonaws.com
+  WebsocketDisconnect:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/00b506aa9f28ec94b7e40d2356589441
+      Runtime: nodejs10.x
+      MemorySize: 1152
+      Timeout: 5
+      Environment:
+        Variables:
+          ARC_ROLE:
+            Ref: Role
+          ARC_CLOUDFORMATION:
+            Ref: AWS::StackName
+          ARC_APP_NAME: cage-socket-arc6
+          ARC_HTTP: aws_proxy
+          NODE_ENV: staging
+          SESSION_TABLE_NAME: jwe
+          ARC_STATIC_BUCKET:
+            Ref: StaticBucket
+          ARC_WSS_URL:
+            Fn::Sub:
+            - wss://${WS}.execute-api.${AWS::Region}.amazonaws.com/staging
+            - {}
+      Role:
+        Fn::Sub:
+        - arn:aws:iam::${AWS::AccountId}:role/${roleName}
+        - roleName:
+            Ref: Role
+      Events: {}
+  WebsocketDisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: WS
+      RouteKey: $disconnect
+      OperationName: WebsocketDisconnectRoute
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: WebsocketDisconnectIntegration
+  WebsocketDisconnectIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: WS
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub:
+        - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebsocketDisconnect.Arn}/invocations
+        - {}
+  WebsocketDisconnectPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - WS
+    - WebsocketDisconnect
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: WebsocketDisconnect
+      Principal: apigateway.amazonaws.com
+  ConnectionTableTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+      - AttributeName: connectionId
+        KeyType: HASH
+      AttributeDefinitions:
+      - AttributeName: connectionId
+        AttributeType: S
+      BillingMode: PAY_PER_REQUEST
   Role:
     Type: AWS::IAM::Role
     Properties:
@@ -169,6 +463,46 @@ Resources:
               - arn:aws:s3:::${bukkit}/*
               - bukkit:
                   Ref: StaticBucket
+      - PolicyName: ArcDynamoPolicy
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - dynamodb:BatchGetItem
+            - dynamodb:BatchWriteItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:DescribeStream
+            - dynamodb:ListStreams
+            Resource:
+            - Fn::Sub:
+              - arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}
+              - tablename:
+                  Ref: ConnectionTableTable
+            - Fn::Sub:
+              - arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*
+              - tablename:
+                  Ref: ConnectionTableTable
+            - Fn::Sub:
+              - arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/stream/*
+              - tablename:
+                  Ref: ConnectionTableTable
+  ConnectionTableParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name:
+        Fn::Sub:
+        - /${AWS::StackName}/tables/${tablename}
+        - tablename: connection_table
+      Value:
+        Ref: ConnectionTableTable
   StaticBucketParam:
     Type: AWS::SSM::Parameter
     Properties:
@@ -222,3 +556,9 @@ Outputs:
       - http://${bukkit}.s3-website-${AWS::Region}.amazonaws.com
       - bukkit:
           Ref: StaticBucket
+  WSS:
+    Description: Websocket Endpoint
+    Value:
+      Fn::Sub:
+      - wss://${WS}.execute-api.${AWS::Region}.amazonaws.com/staging
+      - {}
