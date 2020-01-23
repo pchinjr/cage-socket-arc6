@@ -1,12 +1,8 @@
 {
   "version": 3,
   "file": "bundle.css",
-  "sources": [
-    "../App.svelte"
-  ],
-  "sourcesContent": [
-    "<script>\n  import { onMount } from 'svelte'\n  export let message;\n  onMount(async () => {\n    let data = await (await fetch('staging/api')).json()\n    message = data.msg\n    console.log('MESSAGE: ', message)\n  })\n</script>\n\n<style>\n  h1 {\n    color: purple;\n  }\n</style>\n\n<h1>{message}</h1>\n<h2>The Lord's Prayer</h2>\n<p><strong>Our Father</strong>, which art in Snake Eyes, \n  Nicolas be thy name;   \n  thy  Face/Off come; \n  thy Con-Air be done,\n  in earth as it is in Deadfall.\n  Give us this day our daily Ghost Rider.\n  And forgive him for Trespass,\n  as we forgave him for Windtalkers.\n  And lead us not into Adaptation.;\n  but deliver us from The Rock.\n  For thine is the Wicker Man,\n  the National Treasure\n</p>"
-  ],
+  "sources": [],
+  "sourcesContent": [],
   "names": [],
-  "mappings": "AAWE,EAAE,eAAC,CAAC,AACF,KAAK,CAAE,MAAM,AACf,CAAC"
+  "mappings": ""
 }
