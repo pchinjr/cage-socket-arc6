@@ -6,6 +6,7 @@ exports.handler = async function ws (req) {
   let { requestContext } = req
   const connectionId = requestContext.connectionId
   const params = { connectionId: connectionId}
-  await arc.data.connection_table.delete(params)
+  let data = await arc.tables()
+  await data.connection_table.delete(params)
   return {statusCode: 200}
 }
