@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Exported by architect/package@1.2.1 on 2020-01-23T05:23:53.940Z
+Description: Exported by architect/package@1.2.1 on 2020-01-23T21:33:20.614Z
 Resources:
   CageSocketArc6:
     Type: AWS::Serverless::Api
@@ -98,7 +98,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/7bcf4ae992c2a3268c2a8b6a18d2347c
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/340179860c81e8b8d88f7124ba313ee0
       Runtime: nodejs12.x
       MemorySize: 1152
       Timeout: 5
@@ -232,7 +232,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/b8178a6ccb70c89d2e373aad7c37b066
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/a1922096f306babee1f9310b9b9485f0
       Runtime: nodejs12.x
       MemorySize: 1152
       Timeout: 5
@@ -294,7 +294,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/76541351ec6f78527c704155a174746a
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/151c46df5a0c919825f4b5d09a92a079
       Runtime: nodejs12.x
       MemorySize: 1152
       Timeout: 5

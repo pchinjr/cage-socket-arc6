@@ -7,6 +7,6 @@ exports.handler = async function http (req) {
     },
     body: JSON.stringify({
       msg: '#PraiseCage from OpenJS Architect API Call + Svelte!',
-      wsUrl: `${process.env.ARC_WSS_URL}:${process.env.PORT}`
+      wsUrl: `${process.env.ARC_WSS_URL}`
   })
 }}

@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "Exported by architect/package@1.2.1 on 2020-01-23T05:23:53.940Z",
+  "Description": "Exported by architect/package@1.2.1 on 2020-01-23T21:33:20.614Z",
   "Resources": {
     "CageSocketArc6": {
       "Type": "AWS::Serverless::Api",

@@ -1,8 +1,8 @@
 // learn more about WebSocket functions here: https://arc.codes/primitives/ws
+// adding dependencies to a functinon involves creating package.json at the function level
 const arc = require('@architect/functions')
 
 exports.handler = async function ws(event) {
-  console.log(event)
   await arc.ws.send({
     //who to send it to
     id: event.requestContext.connectionId,
