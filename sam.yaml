@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Exported by architect/package@1.2.1 on 2020-01-24T02:17:53.530Z
+Description: Exported by architect/package@1.2.1 on 2020-01-24T15:56:04.601Z
 Resources:
   CageSocketArc6:
     Type: AWS::Serverless::Api
@@ -232,7 +232,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/a1922096f306babee1f9310b9b9485f0
+      CodeUri: s3://cage-socket-arc6-cfn-deployments-039f6/f03e1cedaf0b94a1280b21be4dbdbb3b
       Runtime: nodejs12.x
       MemorySize: 1152
       Timeout: 5

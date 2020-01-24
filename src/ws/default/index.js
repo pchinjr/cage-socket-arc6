@@ -3,6 +3,9 @@
 const arc = require('@architect/functions')
 
 exports.handler = async function ws(event) {
+  
+  
+  
   await arc.ws.send({
     //who to send it to
     id: event.requestContext.connectionId,
@@ -12,6 +15,6 @@ exports.handler = async function ws(event) {
       id: event.requestContext.connectionId
     }
   })
-  
+  console.log('invoking default')
   return {statusCode: 200}
 }
