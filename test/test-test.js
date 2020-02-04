@@ -19,7 +19,7 @@ test('read', async t=> {
 })
 
 test('architect/functions runtime helpers', async t=> {
-  t.plan(2)
+  t.plan(1)
   let data = await arc.tables()
   let tables = await data.reflect()
   t.ok(data.connection_table, 'data.connection_table')
